@@ -14,8 +14,8 @@
  *
  */
 preferences {
-  input ("url", "text", title: "controller url", 
-    description: "RF433 controller url.",
+  input ("ip", "text", title: "controller IP", 
+    description: "RF433 controller IP address.", default: "192.168.2.105",
     required: true)
   input ("id", "enum", title: "switch id", 
     description: "RF433 switch id", options: ["1","2","3","4","5"],
@@ -44,33 +44,31 @@ metadata {
 // parse events into attributes
 def parse(String description) {
 	log.debug "Parsing '${description}'"
-	// TODO: handle 'switch' attribute
-	// TODO: handle 'url' attribute
-	// TODO: handle 'rfid' attribute
-
 }
 
 // handle commands
 def on() {
 	log.debug "Executing 'on'"
-    try {
-    	httpPost(settings.url, "Id=${settings.id}&Status=ON") { resp ->
-        	log.debug "response data: ${resp.data}"
-        	log.debug "response contentType: ${resp.contentType}"
-    	}
-	} catch (e) {
-    	log.debug "something went wrong: $e"
-	}
+   	def result = new physicalgraph.device.HubAction(
+    	method: "POST",
+    	path: "/rfoutlet/toggle.php",
+    	headers: [HOST: "${settings.ip}:80",
+        	      "Content-Type": "application/x-www-form-urlencoded"
+                 ],
+        body: """Id=${settings.id}&Status=ON"""
+	)
+    return result
 }
 
 def off() {
 	log.debug "Executing 'off'"
-    try {
-    	httpPost(settings.url, "Id=${settings.id}&Status=OFF") { resp ->
-        	log.debug "response data: ${resp.data}"
-        	log.debug "response contentType: ${resp.contentType}"
-    	}
-	} catch (e) {
-    	log.debug "something went wrong: $e"
-	}    
+   	def result = new physicalgraph.device.HubAction(
+    	method: "POST",
+    	path: "/rfoutlet/toggle.php",
+    	headers: [HOST: "${settings.ip}:80",
+        	      "Content-Type": "application/x-www-form-urlencoded"
+                 ],
+        body: """Id=${settings.id}&Status=OFF"""
+	)
+    return result
 }
