@@ -57,6 +57,7 @@ def on() {
                  ],
         body: """Id=${settings.id}&Status=ON"""
 	)
+    sendEvent(name: "switch", value: "on")
     return result
 }
 
@@ -70,5 +71,6 @@ def off() {
                  ],
         body: """Id=${settings.id}&Status=OFF"""
 	)
+    sendEvent(name: "switch", value: "off")
     return result
 }
